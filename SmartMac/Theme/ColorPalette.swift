@@ -1,30 +1,30 @@
 import SwiftUI
 
 /// SmartMac Color Palette
-/// Light theme: Casa Blanca background with dark text
+/// Dynamic theme-aware colors that respond to ThemeManager changes
 extension Color {
-    // MARK: - Backgrounds (Light Theme)
-    static let smartMacBackground = Color(hex: "F5F0E6")           // Casa Blanca (warm off-white)
-    static let smartMacSecondaryBg = Color(hex: "EBE6DC")          // Slightly darker Casa Blanca
-    static let smartMacCardBg = Color(hex: "FFFFFF")               // White cards for contrast
+    // MARK: - Backgrounds (Dynamic from Theme)
+    static var smartMacBackground: Color { ThemeManager.shared.background }
+    static var smartMacSecondaryBg: Color { ThemeManager.shared.secondaryBg }
+    static var smartMacCardBg: Color { ThemeManager.shared.cardBg }
     
-    // MARK: - Accents
-    static let smartMacForestGreen = Color(hex: "2D5A3D")          // Forest Green
-    static let smartMacNavyBlue = Color(hex: "1E3A5F")             // Navy Blue
-    static let smartMacAccentGreen = Color(hex: "3D7A52")          // Lighter green for highlights
-    static let smartMacAccentBlue = Color(hex: "2E5A8F")           // Lighter blue for highlights
+    // MARK: - Accents (Dynamic from Theme)
+    static var smartMacForestGreen: Color { ThemeManager.shared.accent }
+    static var smartMacNavyBlue: Color { ThemeManager.shared.accentSecondary }
+    static var smartMacAccentGreen: Color { ThemeManager.shared.accent }
+    static var smartMacAccentBlue: Color { ThemeManager.shared.accentSecondary }
     
-    // MARK: - Text (Dark on Light)
-    static let smartMacCasaBlanca = Color(hex: "1A1A1A")           // Near black for primary text
-    static let smartMacTextPrimary = Color(hex: "1A1A1A")          // Alias for primary text
-    static let smartMacTextSecondary = Color(hex: "4A4A4A")        // Dark gray
-    static let smartMacTextTertiary = Color(hex: "7A7A7A")         // Medium gray
+    // MARK: - Text (Dynamic from Theme)
+    static var smartMacCasaBlanca: Color { ThemeManager.shared.textPrimary }
+    static var smartMacTextPrimary: Color { ThemeManager.shared.textPrimary }
+    static var smartMacTextSecondary: Color { ThemeManager.shared.textSecondary }
+    static var smartMacTextTertiary: Color { ThemeManager.shared.textTertiary }
     
-    // MARK: - Status Colors
-    static let smartMacSuccess = Color(hex: "2D7A4D")              // Darker green for light bg
-    static let smartMacWarning = Color(hex: "C68A35")              // Darker amber
-    static let smartMacDanger = Color(hex: "B64A4A")               // Darker red
-    static let smartMacInfo = Color(hex: "3A7AB6")                 // Darker blue
+    // MARK: - Status Colors (Dynamic from Theme)
+    static var smartMacSuccess: Color { ThemeManager.shared.success }
+    static var smartMacWarning: Color { ThemeManager.shared.warning }
+    static var smartMacDanger: Color { ThemeManager.shared.danger }
+    static var smartMacInfo: Color { ThemeManager.shared.info }
 }
 
 // MARK: - Custom Font
@@ -77,3 +77,4 @@ extension Color {
         )
     }
 }
+

@@ -3,6 +3,8 @@ import SwiftUI
 struct ContentView: View {
     @State private var selectedTab: NavigationTab = .dashboard
     @StateObject private var systemMonitor = SystemMonitor()
+    @StateObject private var themeManager = ThemeManager.shared
+    @State private var showThemePicker = false
     
     var body: some View {
         NavigationSplitView {
@@ -30,7 +32,9 @@ struct ContentView: View {
                             tab: tab,
                             isSelected: selectedTab == tab
                         ) {
-                            selectedTab = tab
+                            withAnimation(.easeInOut(duration: 0.25)) {
+                                selectedTab = tab
+                            }
                         }
                     }
                 }
@@ -38,6 +42,23 @@ struct ContentView: View {
                 .padding(.horizontal, 12)
                 
                 Spacer()
+                
+                // Settings / Theme Button
+                Button(action: { showThemePicker = true }) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "paintpalette.fill")
+                            .font(.system(size: 14))
+                        Text("Theme")
+                            .font(.system(size: 13))
+                    }
+                    .foregroundColor(.smartMacTextSecondary)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(Color.smartMacBackground.opacity(0.5))
+                    .cornerRadius(8)
+                }
+                .buttonStyle(.plain)
+                .padding(.bottom, 12)
                 
                 // System Status Indicator
                 HStack(spacing: 8) {
@@ -53,41 +74,69 @@ struct ContentView: View {
             .frame(width: 200)
             .background(Color.smartMacSecondaryBg)
         } detail: {
-            // Main Content
-            Group {
-                switch selectedTab {
-                case .dashboard:
-                    DashboardView(monitor: systemMonitor)
-                case .technicalSpecs:
-                    TechnicalSpecsView(monitor: systemMonitor)
-                case .suggestions:
-                    SuggestionsView(monitor: systemMonitor)
-                case .performanceMode:
-                    PerformanceModeView(monitor: systemMonitor)
-                case .ramOptimizer:
-                    RAMOptimizationView(monitor: systemMonitor)
-                case .appUsage:
-                    AppUsageAnalyticsView(monitor: systemMonitor)
-                case .speedTest:
-                    NetworkSpeedTestView(monitor: systemMonitor)
-                case .startupTime:
-                    StartupTimeView(monitor: systemMonitor)
-                case .largeFiles:
-                    LargeFileFinderView(monitor: systemMonitor)
-                case .cleanup:
-                    OneClickCleanupView(monitor: systemMonitor)
-                case .battery:
-                    BatteryHealthView(monitor: systemMonitor)
-                case .trends:
-                    HistoricalTrendsView(monitor: systemMonitor)
+            // Main Content with smooth transitions
+            ZStack {
+                ForEach(NavigationTab.allCases, id: \.self) { tab in
+                    if selectedTab == tab {
+                        viewForTab(tab)
+                            .transition(.asymmetric(
+                                insertion: .opacity.combined(with: .scale(scale: 0.98)).animation(.easeOut(duration: 0.2)),
+                                removal: .opacity.animation(.easeIn(duration: 0.15))
+                            ))
+                    }
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.smartMacBackground)
+            .animation(.easeInOut(duration: 0.25), value: selectedTab)
         }
         .navigationSplitViewStyle(.prominentDetail)
         .toolbar(.hidden, for: .windowToolbar)
         .toolbarBackground(.hidden, for: .windowToolbar)
+        .sheet(isPresented: $showThemePicker) {
+            ThemePickerView(themeManager: themeManager)
+        }
+        .id(themeManager.currentTheme) // Force view refresh on theme change
+    }
+    
+    @ViewBuilder
+    private func viewForTab(_ tab: NavigationTab) -> some View {
+        switch tab {
+        case .dashboard:
+            DashboardView(monitor: systemMonitor, selectedTab: $selectedTab)
+        case .technicalSpecs:
+            TechnicalSpecsView(monitor: systemMonitor)
+        case .suggestions:
+            SuggestionsView(monitor: systemMonitor)
+        case .performanceMode:
+            PerformanceModeView(monitor: systemMonitor)
+        case .ramOptimizer:
+            RAMOptimizationView(monitor: systemMonitor)
+        case .appUsage:
+            AppUsageAnalyticsView(monitor: systemMonitor)
+        case .speedTest:
+            NetworkSpeedTestView(monitor: systemMonitor)
+        case .startupTime:
+            StartupTimeView(monitor: systemMonitor)
+        case .largeFiles:
+            LargeFileFinderView(monitor: systemMonitor)
+        case .cleanup:
+            OneClickCleanupView(monitor: systemMonitor)
+        case .battery:
+            BatteryHealthView(monitor: systemMonitor)
+        case .trends:
+            HistoricalTrendsView(monitor: systemMonitor)
+        case .clipboard:
+            ClipboardManagerView()
+        case .bandwidth:
+            BandwidthMonitorView()
+        case .security:
+            SecurityScannerView()
+        case .uninstaller:
+            AppUninstallerView()
+        case .shortcuts:
+            ShortcutManagerView()
+        }
     }
 }
 
@@ -105,6 +154,11 @@ enum NavigationTab: String, CaseIterable {
     case cleanup = "Cleanup"
     case battery = "Battery"
     case trends = "Trends"
+    case clipboard = "Clipboard"
+    case bandwidth = "Bandwidth"
+    case security = "Security"
+    case uninstaller = "Uninstaller"
+    case shortcuts = "Shortcuts"
     
     var icon: String {
         switch self {
@@ -120,6 +174,11 @@ enum NavigationTab: String, CaseIterable {
         case .cleanup: return "sparkles"
         case .battery: return "battery.100"
         case .trends: return "chart.xyaxis.line"
+        case .clipboard: return "doc.on.clipboard"
+        case .bandwidth: return "network"
+        case .security: return "shield.checkered"
+        case .uninstaller: return "trash.square"
+        case .shortcuts: return "keyboard"
         }
     }
 }
@@ -129,6 +188,8 @@ struct NavigationButton: View {
     let tab: NavigationTab
     let isSelected: Bool
     let action: () -> Void
+    
+    @State private var isHovered = false
     
     var body: some View {
         Button(action: action) {
@@ -145,9 +206,13 @@ struct NavigationButton: View {
             .foregroundColor(isSelected ? .smartMacCasaBlanca : .smartMacTextSecondary)
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(isSelected ? Color.smartMacForestGreen.opacity(0.4) : Color.clear)
+                    .fill(isSelected ? Color.smartMacForestGreen.opacity(0.4) : (isHovered ? Color.smartMacForestGreen.opacity(0.15) : Color.clear))
             )
+            .scaleEffect(isHovered && !isSelected ? 1.02 : 1.0)
         }
         .buttonStyle(.plain)
+        .onHover { isHovered = $0 }
+        .animation(.easeOut(duration: 0.15), value: isHovered)
     }
 }
+

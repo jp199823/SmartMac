@@ -326,6 +326,96 @@ struct SuggestionsBank {
             actionLabel: nil
         ) { monitor in
             monitor.overallHealth == .excellent
+        },
+        
+        // MARK: - Google Chrome Optimization Tips
+        Suggestion(
+            title: "Reduce Chrome Memory Usage",
+            description: "Chrome uses memory for each open tab. Close unused tabs, use tab suspension extensions like 'The Great Suspender', or enable Chrome's built-in Memory Saver in Settings > Performance.",
+            category: .memory,
+            priority: .low,
+            icon: "globe",
+            actionLabel: nil
+        ) { _ in
+            true
+        },
+        
+        Suggestion(
+            title: "Chrome Battery Optimization",
+            description: "Reduce Chrome's battery drain by enabling 'Energy Saver' mode in Settings > Performance, blocking auto-playing videos, and limiting background tabs. Consider using Safari for better battery life.",
+            category: .battery,
+            priority: .low,
+            icon: "bolt.badge.clock",
+            actionLabel: nil
+        ) { monitor in
+            monitor.batteryMetrics.isPresent
+        },
+        
+        Suggestion(
+            title: "Disable Chrome Extensions",
+            description: "Unused Chrome extensions consume memory and CPU. Review your extensions at chrome://extensions and remove or disable ones you don't actively use.",
+            category: .performance,
+            priority: .low,
+            icon: "puzzlepiece.extension",
+            actionLabel: nil
+        ) { _ in
+            true
+        },
+        
+        Suggestion(
+            title: "Chrome Hardware Acceleration",
+            description: "Enable Hardware Acceleration in Chrome Settings > System to offload graphics work to your GPU, reducing CPU usage and improving performance on video-heavy sites.",
+            category: .performance,
+            priority: .low,
+            icon: "cpu",
+            actionLabel: nil
+        ) { _ in
+            true
+        },
+        
+        // MARK: - Finder Optimization Tips
+        Suggestion(
+            title: "Optimize Finder Performance",
+            description: "Speed up Finder by disabling 'Calculate all sizes' in View Options (Cmd+J) for large folders. Also disable 'Show icon preview' for folders with many files.",
+            category: .performance,
+            priority: .low,
+            icon: "folder.badge.gearshape",
+            actionLabel: nil
+        ) { _ in
+            true
+        },
+        
+        Suggestion(
+            title: "Reduce Finder Memory Usage",
+            description: "Finder can accumulate memory over time. Force quit and relaunch Finder periodically via Activity Monitor, or use Option+Right-click on Finder icon in Dock and select 'Relaunch'.",
+            category: .memory,
+            priority: .low,
+            icon: "arrow.clockwise.circle",
+            actionLabel: nil
+        ) { _ in
+            true
+        },
+        
+        Suggestion(
+            title: "Clean Up Recent Items",
+            description: "Finder tracks recent files and folders which uses resources. Clear recent items in Apple Menu > Recent Items > Clear Menu, or reduce the count in System Settings > Desktop & Dock.",
+            category: .maintenance,
+            priority: .low,
+            icon: "clock.arrow.circlepath",
+            actionLabel: nil
+        ) { _ in
+            true
+        },
+        
+        Suggestion(
+            title: "Optimize Finder Sidebar",
+            description: "Remove unused locations from Finder's sidebar. Too many smart folders or network locations can slow Finder as it checks their status. Customize via Finder > Settings > Sidebar.",
+            category: .performance,
+            priority: .low,
+            icon: "sidebar.left",
+            actionLabel: nil
+        ) { _ in
+            true
         }
     ]
     

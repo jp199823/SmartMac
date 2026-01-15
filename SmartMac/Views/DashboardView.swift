@@ -3,6 +3,7 @@ import SwiftUI
 /// Main dashboard view showing at-a-glance system health
 struct DashboardView: View {
     @ObservedObject var monitor: SystemMonitor
+    @Binding var selectedTab: NavigationTab
     
     var body: some View {
         ScrollView {
@@ -61,8 +62,13 @@ struct DashboardView: View {
     // MARK: - Main Gauges
     private var mainGaugesSection: some View {
         HStack(spacing: 20) {
-            // RAM Gauge
-            MetricCard(title: "Memory", icon: "memorychip", iconColor: .smartMacAccentBlue) {
+            // RAM Gauge - Clickable to RAM Optimizer
+            ClickableMetricCard(
+                title: "Memory",
+                icon: "memorychip",
+                iconColor: .smartMacAccentBlue,
+                action: { selectedTab = .ramOptimizer }
+            ) {
                 VStack(spacing: 16) {
                     CircularGauge(
                         value: monitor.memoryMetrics.usagePercentage,
@@ -86,8 +92,13 @@ struct DashboardView: View {
                 }
             }
             
-            // Storage Gauge
-            MetricCard(title: "Storage", icon: "internaldrive", iconColor: .smartMacForestGreen) {
+            // Storage Gauge - Clickable to Large Files
+            ClickableMetricCard(
+                title: "Storage",
+                icon: "internaldrive",
+                iconColor: .smartMacForestGreen,
+                action: { selectedTab = .largeFiles }
+            ) {
                 VStack(spacing: 16) {
                     CircularGauge(
                         value: monitor.storageMetrics.usagePercentage,
@@ -111,8 +122,13 @@ struct DashboardView: View {
                 }
             }
             
-            // System Health
-            MetricCard(title: "System Health", icon: "heart.fill", iconColor: monitor.overallHealth.color) {
+            // System Health - Clickable to Technical Specs
+            ClickableMetricCard(
+                title: "System Health",
+                icon: "heart.fill",
+                iconColor: monitor.overallHealth.color,
+                action: { selectedTab = .technicalSpecs }
+            ) {
                 VStack(spacing: 16) {
                     ZStack {
                         Circle()

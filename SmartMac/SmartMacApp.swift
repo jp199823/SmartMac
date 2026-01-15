@@ -18,7 +18,7 @@ struct SmartMacApp: App {
                     startHistoricalRecording()
                 }
         }
-        .windowStyle(.hiddenTitleBar)
+        .windowStyle(.titleBar)
         .defaultSize(width: 1000, height: 700)
     }
     
